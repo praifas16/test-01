@@ -1,12 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const serverless = require('serverless-http');  // เพิ่มการรองรับ Serverless Functions
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// เชื่อมต่อกับ MongoDB
-mongoose.connect('mongodb://localhost:27017/mydb', {
+// เชื่อมต่อกับ MongoDB (ใช้ environment variable สำหรับ MongoDB URL)
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mydb', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     connectTimeoutMS: 30000  // เพิ่มค่า timeout เป็น 30 วินาที
@@ -15,7 +16,6 @@ mongoose.connect('mongodb://localhost:27017/mydb', {
 }).catch((err) => {
     console.error('Failed to connect to MongoDB', err);
 });
-
 
 // สร้าง Schema และ Model สำหรับการเก็บข้อมูล
 const userSchema = new mongoose.Schema({
@@ -79,7 +79,6 @@ app.post('/submit', (req, res) => {
         });
 });
 
-// เริ่มเซิร์ฟเวอร์
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
+// เปลี่ยนจากการเริ่มเซิร์ฟเวอร์แบบ local มาเป็นการส่งออกเป็น Serverless Function สำหรับ Vercel
+module.exports = app;
+module.exports.handler = serverless(app);
