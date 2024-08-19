@@ -23,9 +23,40 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// เส้นทางสำหรับแสดงฟอร์ม HTML
+// เส้นทางสำหรับแสดงฟอร์ม HTML และข้อมูลทั้งหมด
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    User.find()
+        .then(users => {
+            let userList = users.map(user => `<li>${user.name} (Age: ${user.age})</li>`).join('');
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>User Information Form</title>
+                </head>
+                <body>
+                    <h2>User Information Form</h2>
+                    <form action="/submit" method="post">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required><br><br>
+
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required><br><br>
+
+                        <button type="submit">Submit</button>
+                    </form>
+                    <h2>Submitted Information</h2>
+                    <ul>${userList}</ul>
+                </body>
+                </html>
+            `);
+        })
+        .catch(err => {
+            res.status(500).send('Failed to load data');
+            console.error(err);
+        });
 });
 
 // เส้นทางสำหรับการบันทึกข้อมูลและแสดงผล
@@ -37,23 +68,8 @@ app.post('/submit', (req, res) => {
 
     newUser.save()
         .then(() => {
-            // หลังจากบันทึกข้อมูล ให้แสดงผลข้อมูลที่กรอกในหน้าถัดไป
-            res.send(`
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>User Information Submitted</title>
-                </head>
-                <body>
-                    <h2>Information Submitted</h2>
-                    <p><strong>Name:</strong> ${req.body.name}</p>
-                    <p><strong>Age:</strong> ${req.body.age}</p>
-                    <a href="/">Go back to form</a>
-                </body>
-                </html>
-            `);
+            // หลังจากบันทึกข้อมูลให้ redirect กลับไปที่หน้าแรกเพื่อแสดงข้อมูลใหม่
+            res.redirect('/');
         })
         .catch((err) => {
             res.status(500).send('Failed to save data');
