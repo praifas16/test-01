@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// เส้นทางสำหรับการบันทึกข้อมูล
+// เส้นทางสำหรับการบันทึกข้อมูลและแสดงผล
 app.post('/submit', (req, res) => {
     const newUser = new User({
         name: req.body.name,
@@ -37,7 +37,23 @@ app.post('/submit', (req, res) => {
 
     newUser.save()
         .then(() => {
-            res.send('User data has been saved to MongoDB!');
+            // หลังจากบันทึกข้อมูล ให้แสดงผลข้อมูลที่กรอกในหน้าถัดไป
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>User Information Submitted</title>
+                </head>
+                <body>
+                    <h2>Information Submitted</h2>
+                    <p><strong>Name:</strong> ${req.body.name}</p>
+                    <p><strong>Age:</strong> ${req.body.age}</p>
+                    <a href="/">Go back to form</a>
+                </body>
+                </html>
+            `);
         })
         .catch((err) => {
             res.status(500).send('Failed to save data');
