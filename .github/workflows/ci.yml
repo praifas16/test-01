@@ -3,7 +3,7 @@ name: CI/CD Pipeline for GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main # หรือ branch ที่คุณใช้สำหรับการพัฒนา
 
 jobs:
   build:
@@ -21,11 +21,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # - name: Run tests
+      #   run: npm test
+
       - name: Build the project
-        run: npm run build # ใช้ build script จาก package.json
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build # เปลี่ยนเป็นโฟลเดอร์ที่คุณต้องการ deploy
+          publish_dir: ./build # ตรวจสอบว่าถูกต้องกับโฟลเดอร์ที่ถูก build
