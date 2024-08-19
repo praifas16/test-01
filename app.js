@@ -8,12 +8,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // เชื่อมต่อกับ MongoDB
 mongoose.connect('mongodb://localhost:27017/mydb', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    connectTimeoutMS: 30000  // เพิ่มค่า timeout เป็น 30 วินาที
 }).then(() => {
     console.log('Connected to MongoDB');
 }).catch((err) => {
     console.error('Failed to connect to MongoDB', err);
 });
+
 
 // สร้าง Schema และ Model สำหรับการเก็บข้อมูล
 const userSchema = new mongoose.Schema({
