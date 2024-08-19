@@ -25,11 +25,10 @@ jobs:
         run: npm test
 
       - name: Build the project
-        run: npm run build
+        run: npm run build # ใช้ build script จาก package.json
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build # โฟลเดอร์ที่สร้างจาก build
-
+          publish_dir: ./build # เปลี่ยนเป็นโฟลเดอร์ที่คุณต้องการ deploy
