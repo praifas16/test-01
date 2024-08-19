@@ -1,12 +1,12 @@
-name: CI/CD Pipeline for GitHub Pages
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main # หรือ branch ที่คุณใช้สำหรับการพัฒนา
+      - main # หรือ branch ที่คุณใช้สำหรับการ deploy บน Vercel
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,14 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Run tests
-      #   run: npm test
+      - name: Run tests
+        run: npm test # รันการทดสอบ (ถ้าคุณมี script ทดสอบใน package.json)
 
       - name: Build the project
-        run: npm run build
+        run: npm run build # สร้าง build (ถ้าจำเป็น)
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build # ตรวจสอบว่าถูกต้องกับโฟลเดอร์ที่ถูก build
+
+  # Vercel จะจัดการการ deploy โดยอัตโนมัติหลังจากที่โค้ดถูก push ไปยัง branch ที่กำหนด
